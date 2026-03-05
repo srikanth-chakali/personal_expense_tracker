@@ -370,12 +370,16 @@ def stat_card(label, value, color, icon):
     """, unsafe_allow_html=True)
 
 # ---------------- DATABASE CONNECTION ---------------- #
+import streamlit as st
+import mysql.connector
+
 def get_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="srikanth",
-        database="users_expense_tracker_cred"
+        host=st.secrets["mysql"]["host"],
+        user=st.secrets["mysql"]["user"],
+        password=st.secrets["mysql"]["password"],
+        database=st.secrets["mysql"]["database"],
+        port=st.secrets["mysql"]["port"]
     )
 
 conn = get_connection()
