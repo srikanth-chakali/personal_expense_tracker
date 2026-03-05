@@ -373,18 +373,41 @@ def stat_card(label, value, color, icon):
 import streamlit as st
 import mysql.connector
 
-@st.cache_resource
 def get_connection():
-    conn = mysql.connector.connect(
-        host=st.secrets["mysql"]["host"],
-        user=st.secrets["mysql"]["user"],
-        password=st.secrets["mysql"]["password"],
-        database=st.secrets["mysql"]["database"],
-        port=st.secrets["mysql"]["port"]
-    )
-    return conn
+    try:
+        # Use Streamlit secrets if available (for deployment)
+        host = st.secrets["mysql"]["host"]
+        user = st.secrets["mysql"]["user"]
+        password = st.secrets["mysql"]["password"]
+        database = st.secrets["mysql"]["database"]
+        port = st.secrets["mysql"]["port"]
+    except:
+        # Fallback for local development
+        host = "interchange.proxy.rlwy.net"
+        user = "root"
+        password = "YOUR_RAILWAY_PASSWORD"
+        database = "railway"
+        port = 15297
+
+    try:
+        conn = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database,
+            port=port
+        )
+        return conn
+    except Exception as e:
+        st.error(f"MySQL connection failed: {e}")
+        return None
+
 
 conn = get_connection()
+
+if conn is None:
+    st.stop()
+
 cursor = conn.cursor()
 
 # ---------------- CREATE TABLES SAFELY ---------------- #
