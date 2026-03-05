@@ -373,45 +373,50 @@ def stat_card(label, value, color, icon):
 import streamlit as st
 import mysql.connector
 
+@st.cache_resource
 def get_connection():
-    return mysql.connector.connect(
+    conn = mysql.connector.connect(
         host=st.secrets["mysql"]["host"],
         user=st.secrets["mysql"]["user"],
         password=st.secrets["mysql"]["password"],
         database=st.secrets["mysql"]["database"],
         port=st.secrets["mysql"]["port"]
     )
+    return conn
 
 conn = get_connection()
 cursor = conn.cursor()
 
-# ---------------- CREATE TABLES ---------------- #
+# ---------------- CREATE TABLES SAFELY ---------------- #
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS users(
-id INT AUTO_INCREMENT PRIMARY KEY,
-username VARCHAR(255) UNIQUE,
-password VARCHAR(255)
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) UNIQUE,
+    password VARCHAR(255)
 )
 """)
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS expenses(
-id INT AUTO_INCREMENT PRIMARY KEY,
-user_id INT,
-date DATE,
-category VARCHAR(100),
-payment VARCHAR(50),
-amount DECIMAL(10,2),
-description TEXT
+CREATE TABLE IF NOT EXISTS expenses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    date DATE,
+    category VARCHAR(100),
+    payment VARCHAR(50),
+    amount DECIMAL(10,2),
+    description TEXT
 )
 """)
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS income(
-id INT AUTO_INCREMENT PRIMARY KEY,
-user_id INT,
-amount DECIMAL(10,2),
-date DATE
+CREATE TABLE IF NOT EXISTS income (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    amount DECIMAL(10,2),
+    date DATE
 )
 """)
+
 conn.commit()
 
 # ---------------- AUTH FUNCTIONS ---------------- #
