@@ -372,41 +372,21 @@ def stat_card(label, value, color, icon):
 # ---------------- DATABASE CONNECTION ---------------- #
 import streamlit as st
 import mysql.connector
+from urllib.parse import urlparse
 
-def get_connection():
-    try:
-        # Use Streamlit secrets if available (for deployment)
-        host = st.secrets["mysql"]["host"]
-        user = st.secrets["mysql"]["user"]
-        password = st.secrets["mysql"]["password"]
-        database = st.secrets["mysql"]["database"]
-        port = st.secrets["mysql"]["port"]
-    except:
-        # Fallback for local development
-        host = "interchange.proxy.rlwy.net"
-        user = "root"
-        password = "YOUR_RAILWAY_PASSWORD"
-        database = "railway"
-        port = 15297
+# Paste your Railway MYSQL_PUBLIC_URL here
+DATABASE_URL = "mysql://mysql:kIWAwtknHzaHTOLdKICqmcpLMmBmIzMJ@interchange.proxy.rlwy.net:15297/railway"
 
-    try:
-        conn = mysql.connector.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=database,
-            port=port
-        )
-        return conn
-    except Exception as e:
-        st.error(f"MySQL connection failed: {e}")
-        return None
+url = urlparse(DATABASE_URL)
 
+conn = mysql.connector.connect(
+    host="interchange.proxy.rlwy.net",
+    user="root",
+    password="kIWAwtknHzaHTOLdKICqmcpLMmBmIzMJ",   # paste your real password here
+    database="railway",
+    port=15297
+)
 
-conn = get_connection()
-
-if conn is None:
-    st.stop()
 
 cursor = conn.cursor()
 
